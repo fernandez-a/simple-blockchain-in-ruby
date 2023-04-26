@@ -1,7 +1,7 @@
 class Block
   attr_reader :index, :timestamp, :transactions, 
 							:transactions_count, :previous_hash, 
-							:nonce, :hash 
+							:nonce, :hash
 
   def initialize(index, transactions, previous_hash)
     @index         		 	 = index
@@ -10,11 +10,21 @@ class Block
 		@transactions_count  = transactions.size
     @previous_hash 		 	 = previous_hash
     @nonce, @hash  		 	 = compute_hash_with_proof_of_work
+    @gas_fee						 = check_gas_fee
   end
+
+  def check_gas_fee()
+    count = 0
+    for i in (0..@transactions_count - 1)
+      count += @transactions[i][:qty]
+    end
+    gas_fee = count * 0.0001
+  end
+
 
 	def compute_hash_with_proof_of_work(difficulty="00")
 		nonce = 0
-		loop do 
+		loop do
 			hash = calc_hash_with_nonce(nonce)
 			if hash.start_with?(difficulty)
 				return [nonce, hash]
